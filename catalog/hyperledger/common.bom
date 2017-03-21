@@ -17,7 +17,7 @@ brooklyn.catalog:
       type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
 
       install.command: |
-        sudo yum -y update
+        # sudo yum -y update
         sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
         [dockerrepo]
         name=Docker Repository
@@ -85,7 +85,7 @@ brooklyn.catalog:
         INSTALL_DIR: $brooklyn:attributeWhenReady("install.dir")
 
       install.command: |
-        sudo yum -y update
+        # sudo yum -y update
         sudo yum -y install git npm gcc-c++
         sudo npm install -g composer-cli composer-rest-server
 

@@ -127,7 +127,23 @@ brooklyn.catalog:
         launch.latch: $brooklyn:component("my-hyperledger-sequence-node-multi").attributeWhenReady("service.isUp")
 
       install.command: |
-        sudo docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
+        set -x
+
+        nohup sudo docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview > docker-pull.log 2>&1&
+
+        for i in {1..600}
+        do
+          OUTPUT="$(sudo docker images)"
+          CHECK="fabric-membersrvc"
+
+          if [ "${OUTPUT/$CHECK}" != "$OUTPUT" ]; then
+            exit 0
+          fi
+
+          sleep 1
+        done
+
+        exit 1
 
       post.install.command: |
         echo "Overriding parent post.install.command with no-op"
@@ -179,8 +195,24 @@ brooklyn.catalog:
         HOST_ADDRESS: $brooklyn:attributeWhenReady("host.address")
 
       install.command: |
-        sudo docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
-        sudo docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-baseimage:latest
+        set -x
+
+        nohup sudo docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview > docker-pull.log 2>&1&
+
+        for i in {1..600}
+        do
+          OUTPUT="$(sudo docker images)"
+          CHECK="fabric-peer"
+
+          if [ "${OUTPUT/$CHECK}" != "$OUTPUT" ]; then
+            sudo docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-baseimage:latest
+            exit 0
+          fi
+
+          sleep 1
+        done
+
+        exit 1
 
       post.install.command: |
         echo "Overriding parent post.install.command with no-op"
@@ -354,8 +386,24 @@ brooklyn.catalog:
         "classpath://io.brooklyn.hyperledger:hyperledger/chaincode-request-templates/query-template-security.json": "query-template-security.json"
 
       install.command: |
-        sudo docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
-        sudo docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-baseimage:latest
+        set -x
+
+        nohup sudo docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview > docker-pull.log 2>&1&
+
+        for i in {1..600}
+        do
+          OUTPUT="$(sudo docker images)"
+          CHECK="fabric-peer"
+
+          if [ "${OUTPUT/$CHECK}" != "$OUTPUT" ]; then
+            sudo docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-baseimage:latest
+            exit 0
+          fi
+
+          sleep 1
+        done
+
+        exit 1
 
       post.install.command: |
         echo "Overriding parent post.install.command with no-op"
